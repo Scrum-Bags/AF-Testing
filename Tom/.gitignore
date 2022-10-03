@@ -7,3 +7,5 @@ __pycache__/
 *.cfg
 *.html
 *.log
+
+~$AF_Register_Bank_Member.xlsx
