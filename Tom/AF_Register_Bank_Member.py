@@ -4,10 +4,13 @@ from selenium.webdriver.edge.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 import time, random, unittest, logging, sys
 
+from openpyxl import load_workbook
+
 from AF_POMs import *
 
 from TestSuiteReporter import TestSuiteReporter
 from ExcelReader import excelReader
+from Outlook import Outlook_App
 
 class AF_Register_Bank_Member(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -30,6 +33,7 @@ class AF_Register_Bank_Member(unittest.TestCase):
         #cls.edge_options.headless = True
         cls.driver = webdriver.Edge(options=cls.edge_options)
         cls.driver.loggingID = "AF_Register_Bank_Member"
+        cls.driver.currentExcelRow = 1
 
     @classmethod
     def tearDownClass(cls):
@@ -39,25 +43,37 @@ class AF_Register_Bank_Member(unittest.TestCase):
         self.driver.get("http://uftcapstone-dev-landing.s3-website-us-east-1.amazonaws.com/")
         logging.getLogger(self.driver.loggingID).info("Waiting for home page to load")
         BasePage.wait_for_element(self, HomePageLocators.By_getstarted_btn, 30)
+        self.driver.currentExcelRow += 1
+        self.driver.reporter = self.reporter
+
+        #Load excel row
+        wb = load_workbook(filename = 'AF_Register_Bank_Member.xlsx', data_only=True)
+        sheet = wb['TH_TC001']
+        self.driver.data = {}
+        for i in range (1, 21):
+            self.driver.data[sheet.cell(column=i, row=1).value] = sheet.cell(column=i, row=self.driver.currentExcelRow).value
+        logging.getLogger(self.driver.loggingID).info("Loaded excel data")
+
+    def tearDown(self):
+        self.driver.reporter = None
 
     def test_TH_TC001(self):
         logging.getLogger(self.driver.loggingID).info("***BEGINNING TH_TC001 [Non-responsive]***")
-        self.testID = "TC001_" + str(random.getrandbits(64))
-        self.reporter.addTestCase(self.testID, "TH_TC001", "Test signup using valid data [Non-responsive]")
+        self.driver.testID = "TC001_" + str(random.getrandbits(64))
+        self.reporter.addTestCase(self.driver.testID, "TH_TC001", "Test signup using valid data [Non-responsive]")
         self.TH_TC001()
 
     def test_TH_TC001_responsive(self):
         logging.getLogger(self.driver.loggingID).info("***BEGINNING TH_TC001 [Responsive]***")
-        self.testID = "TC001_" + str(random.getrandbits(64))
-        self.reporter.addTestCase(self.testID, "TH_TC001_R", "Test signup using vaid data [Responsive]")
+        self.driver.testID = "TC001_" + str(random.getrandbits(64))
+        self.reporter.addTestCase(self.driver.testID, "TH_TC001_R", "Test signup using vaid data [Responsive]")
         self.driver.set_window_size(500, 900)
         self.TH_TC001()
         
     def TH_TC001(self):
         logging.getLogger(self.driver.loggingID).info("Entered TH_TC001 main test logic")
         driver = self.driver
-        reporter = self.reporter
-        testID = self.testID
+        testID = self.driver.testID
 
         logging.getLogger(driver.loggingID).info("Checking for responsive webpage")
         if driver.get_window_size()['width'] < 550:
@@ -67,51 +83,65 @@ class AF_Register_Bank_Member(unittest.TestCase):
             driver.responsive = False
             logging.getLogger(driver.loggingID).info("Didn't detect responsive")
 
+        find_and_update_email(driver, driver.data["DT_email"])
+
         page = HomePage(driver)
         page.click_getstarted()
 
+        #Page 1
         page = SignupPage_1(driver)
-        page.set_text_field(page.first_name, "Tom") #excel
-        page.set_text_field(page.last_name, "Hennessey") #excel
-        page.set_text_field(page.email, "tom@tom.com") #excel
-        page.click_next()
+        page.fill_page_and_submit(driver.data["DT_firstname"], driver.data["DT_lastname"], driver.data["DT_email"])
 
+        #Page 2
         page = SignupPage_2(driver)
-        page.select_account_type("SPENDING") #excel 
-        page.click_next()
+        page.fill_page_and_submit(driver.data["DT_account_type"])
 
+        #Page 3
         page = SignupPage_3(driver)
-        page.set_text_field(page.DOB_field, "07011990") #excel
-        page.select_from_dropdown(page.gender_select, "3") #excel
-        page.set_text_field(page.phone_field, "1231231234") #excel
-        page.click_next()
+        page.fill_page_and_submit(
+            driver.data["DT_DOB"], 
+            driver.data["DT_gender"],
+            driver.data["DT_phone"]
+        )
 
+        #Page 4
         page = SignupPage_4(driver)
-        page.set_text_field(page.SSN_field, "123456789") #excel
-        page.set_text_field(page.drivers_field, "S123-1234-1234") #excel
-        page.click_next()
+        page.fill_page_and_submit(str(driver.data["DT_SSN"]), driver.data["DT_drivers"])
 
+        #Page 5
         page = SignupPage_5(driver)
-        page.set_text_field(page.income_field, "123123") #excel
-        page.select_from_dropdown(page.pay_freq_select, "2") #excel
-        page.click_next()
+        page.fill_page_and_submit(driver.data["DT_income"], driver.data["DT_pay_freq"])
 
+        #Page 6
         page = SignupPage_6(driver)
-        page.set_text_field(page.address_field, "123 West Street") #excel
-        page.set_text_field(page.city_field, "Mycity") #excel
-        page.select_from_dropdown(page.state_select, "3") #excel
-        page.set_text_field(page.zipcode_field, "12345") #excel
-        page.click_next()
+        page.fill_page_and_submit(
+            driver.data["DT_address"],
+            driver.data["DT_city"],
+            driver.data["DT_state"],
+            driver.data["DT_zip"]
+        )
 
+        #Page 7
         page = SignupPage_7(driver)
-        page.click_yes_no("NO") #excel
-        if True: #add check for YES or NO value above
-            page.set_text_field(page.address, "123 North Street") #excel
-            page.set_text_field(page.city, "Myothercity") #excel
-            page.select_from_dropdown(page.state, "4") #excel
-            page.set_text_field(page.zipcode, "12543") #excel
-        page.click_next()
+        page.fill_page_and_submit(
+            driver.data["DT_alternate_address"],
+            driver.data["DT_mailing_address"],
+            driver.data["DT_mailing_city"],
+            driver.data["DT_mailing_state"],
+            driver.data["DT_mailing_zip"]
+        )
 
+        #Approval page
+        page = ApprovalPage(driver)
+
+        #TODO Approval page
+        #TODO check email
+        '''
+        obj = Outlook_App()
+        msg = obj.search_by_subject("Welcome", 6)
+        print(msg)
+        print(obj.get_body(msg))
+        '''
         time.sleep(3)
 
 

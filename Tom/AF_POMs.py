@@ -6,10 +6,14 @@ from selenium.webdriver.common.action_chains import ActionChains
 import time, random, traceback, logging
 
 from AF_Locators import *
+from AF_Utilities import *
+from TestSuiteReporter import TestSuiteReporter
 
 class BasePage:
     def __init__(self, driver):
         self.driver = driver
+        self.testID = self.driver.testID
+        self.reporter = self.driver.reporter
 
     @staticmethod
     def wait_for_element(self, locator, timeout = 20):
@@ -39,6 +43,8 @@ class HomePage(BasePage):
         self.getstarted_btn.click()
         self.wait_for_element(self, SignupLocators_1.By_last_name_field)
         logging.getLogger(self.driver.loggingID).info("Clicked signup button")
+        self.reporter[self.testID].reportEvent("Clicked signup button", False, "")
+
 
 class BaseSignupPage(BasePage):
     def __init__(self, driver):
@@ -53,25 +59,38 @@ class BaseSignupPage(BasePage):
         element.clear()
         element.click()
         element.send_keys(str(value))
-        logging.getLogger(self.driver.loggingID).info("Set " + element.get_attribute('id') + " to " + str(value))
+        report_event_and_log(
+            self.driver, 
+            "Set [" + element.get_attribute('id') + "]" + " to [" + str(value) + "]",
+        )
+
 
     def select_from_dropdown(self, element, index):
         select = Select(element)
         select.select_by_index(int(index))
-        logging.getLogger(self.driver.loggingID).info("Set " + element.get_attribute('id') + " to " + select.first_selected_option.text)
+        report_event_and_log(
+            self.driver,
+            "Set [" + element.get_attribute('id') + "]" + " to [" + select.first_selected_option.text + "]"
+        )
 
     def click_next(self):
         if self.driver.responsive == True:
-            #self.driver.execute_script("arguments[0].scrollIntoView(true)", self.next_btn)
             self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight)")
             time.sleep(0.3)
         self.driver.find_element(*BaseSignupPageLocators.By_next_btn).click()
-        logging.getLogger(self.driver.loggingID).info("Clicked next button")
-    
+        report_event_and_log(
+            self.driver,
+            "Clicked 'next' button"
+        )
+
     def click_back(self, locatorToWaitFor):
         self.driver.find_element(*BaseSignupPageLocators.By_back_btn).click()
         self.wait_for_element(self, locatorToWaitFor)
         logging.getLogger(self.driver.loggingID).info("Clicked back button")
+        report_event_and_log(
+            self.driver,
+            "Clicked 'back' button"
+        )
 
 class SignupPage_1(BaseSignupPage):
     def __init__(self, driver):
@@ -80,7 +99,31 @@ class SignupPage_1(BaseSignupPage):
         self.first_name = self.driver.find_element(*SignupLocators_1.By_first_name_field)
         self.last_name = self.driver.find_element(*SignupLocators_1.By_last_name_field)
         self.email = self.driver.find_element(*SignupLocators_1.By_email_field)
-        logging.getLogger(self.driver.loggingID).info("Loaded Signup page 1")
+        report_event_and_log(self.driver, "Loaded Signup page 1")
+
+    def fill_page_and_submit(self, firstname, lastname, email):
+        self.set_text_field(self.first_name, firstname)
+        self.set_text_field(self.last_name, lastname)
+        self.set_text_field(self.email, email)
+        if self.next_btn.is_enabled():
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check if next button is enabled after filling fields", 
+                "Next button is enabled",
+                "Next button is enabled",
+                True,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
+            self.click_next()
+        else:
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check if next button is enabled after filling fields", 
+                "Next button is enabled",
+                "Next button is disabled",
+                False,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
 
 class SignupPage_2(BaseSignupPage):
     def __init__(self, driver):
@@ -89,19 +132,42 @@ class SignupPage_2(BaseSignupPage):
         self.spending_btn = self.driver.find_element(*SignupLocators_2.By_spending_btn)
         self.stashing_btn = self.driver.find_element(*SignupLocators_2.By_stashing_btn)
         self.both_btn = self.driver.find_element(*SignupLocators_2.By_both_btn)
-        logging.getLogger(self.driver.loggingID).info("Loaded Signup page 2")
+        report_event_and_log(self.driver, "Loaded Signup page 2")
+
+    def fill_page_and_submit(self, account_type):
+        self.select_account_type(account_type)
+        if self.next_btn.is_enabled():
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check if next button is enabled after filling fields", 
+                "Next button is enabled",
+                "Next button is enabled",
+                True,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
+            self.click_next()
+        else:
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check if next button is enabled after filling fields", 
+                "Next button is enabled",
+                "Next button is disabled",
+                False,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
 
     def select_account_type(self, value):
         match str(value):
             case "STASHING":
                 self.stashing_btn.click()
-                logging.getLogger(self.driver.loggingID).info("Selected STASHING account type")
+                report_event_and_log(self.driver, "Selected STASHING account type")
             case "SPENDING":
                 self.spending_btn.click()
-                logging.getLogger(self.driver.loggingID).info("Selected SPENDING account type")
+                report_event_and_log(self.driver, "Selected SPENDING account type")
             case "BOTH":
                 self.both_btn.click()
-                logging.getLogger(self.driver.loggingID).info("Selected BOTH account type")
+                report_event_and_log(self.driver, "Selected BOTH account type")
+
 
 class SignupPage_3(BaseSignupPage):
     def __init__(self, driver):
@@ -110,7 +176,31 @@ class SignupPage_3(BaseSignupPage):
         self.DOB_field = self.driver.find_element(*SignupLocators_3.By_DOB_field)
         self.gender_select = self.driver.find_element(*SignupLocators_3.By_gender_select)
         self.phone_field = self.driver.find_element(*SignupLocators_3.By_phone_field)
-        logging.getLogger(self.driver.loggingID).info("Loaded Signup page 3")
+        report_event_and_log(self.driver, "Loaded Signup page 3")
+
+    def fill_page_and_submit(self, DOB, gender, phone):
+        self.set_text_field(self.DOB_field, DOB)
+        self.select_from_dropdown(self.gender_select, gender)
+        self.set_text_field(self.phone_field, phone)
+        if self.next_btn.is_enabled():
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check if next button is enabled after filling fields", 
+                "Next button is enabled",
+                "Next button is enabled",
+                True,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
+            self.click_next()
+        else:
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check if next button is enabled after filling fields", 
+                "Next button is enabled",
+                "Next button is disabled",
+                False,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
 
 class SignupPage_4(BaseSignupPage):
     def __init__(self, driver):
@@ -118,7 +208,31 @@ class SignupPage_4(BaseSignupPage):
         super().__init__(driver)
         self.SSN_field = self.driver.find_element(*SignupLocators_4.By_SSN_field)
         self.drivers_field = self.driver.find_element(*SignupLocators_4.By_drivers_field)
-        logging.getLogger(self.driver.loggingID).info("Loaded Signup page 4")
+        report_event_and_log(self.driver, "Loaded Signup page 4")
+
+    def fill_page_and_submit(self, SSN, drivers):
+        self.set_text_field(self.SSN_field, SSN)
+        self.set_text_field(self.drivers_field, drivers)
+        if self.next_btn.is_enabled():
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check if next button is enabled after filling fields", 
+                "Next button is enabled",
+                "Next button is enabled",
+                True,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
+            self.click_next()
+        else:
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check if next button is enabled after filling fields", 
+                "Next button is enabled",
+                "Next button is disabled",
+                False,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
+
 
 class SignupPage_5(BaseSignupPage):
     def __init__(self, driver):
@@ -126,7 +240,31 @@ class SignupPage_5(BaseSignupPage):
         super().__init__(driver)
         self.income_field = self.driver.find_element(*SignupLocators_5.By_income_field)
         self.pay_freq_select = self.driver.find_element(*SignupLocators_5.By_pay_freq_select)
-        logging.getLogger(self.driver.loggingID).info("Loaded Signup page 5")
+        report_event_and_log(self.driver, "Loaded Signup page 5")
+
+    def fill_page_and_submit(self, income, pay_freq):
+        self.set_text_field(self.income_field, income)
+        self.select_from_dropdown(self.pay_freq_select, pay_freq)
+        if self.next_btn.is_enabled():
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check if next button is enabled after filling fields", 
+                "Next button is enabled",
+                "Next button is enabled",
+                True,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
+            self.click_next()
+        else:
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check if next button is enabled after filling fields", 
+                "Next button is enabled",
+                "Next button is disabled",
+                False,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
+
 
 class SignupPage_6(BaseSignupPage):
     def __init__(self, driver):
@@ -136,7 +274,32 @@ class SignupPage_6(BaseSignupPage):
         self.city_field = self.driver.find_element(*SignupLocators_6.By_city_field)
         self.state_select = self.driver.find_element(*SignupLocators_6.By_state_select)
         self.zipcode_field = self.driver.find_element(*SignupLocators_6.By_zipcode_field)
-        logging.getLogger(self.driver.loggingID).info("Loaded Signup page 6")
+        report_event_and_log(self.driver, "Loaded Signup page 6")
+
+    def fill_page_and_submit(self, address, city, state, zip):
+        self.set_text_field(self.address_field, address)
+        self.set_text_field(self.city_field, city)
+        self.select_from_dropdown(self.state_select, state)
+        self.set_text_field(self.zipcode_field, zip)
+        if self.next_btn.is_enabled():
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check if next button is enabled after filling fields", 
+                "Next button is enabled",
+                "Next button is enabled",
+                True,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
+            self.click_next()
+        else:
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check if next button is enabled after filling fields", 
+                "Next button is enabled",
+                "Next button is disabled",
+                False,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
 
 class SignupPage_7(BaseSignupPage):
     def __init__(self, driver):
@@ -144,7 +307,7 @@ class SignupPage_7(BaseSignupPage):
         super().__init__(driver)
         self.yes_radio = self.driver.find_element(*SignupLocators_7.By_yes_radio)
         self.no_radio = self.driver.find_element(*SignupLocators_7.By_no_radio)
-        logging.getLogger(self.driver.loggingID).info("Loaded Signup page 7")
+        report_event_and_log(self.driver, "Loaded Signup page 7")
 
     def click_yes_no(self, value):
         match value:
@@ -156,8 +319,41 @@ class SignupPage_7(BaseSignupPage):
                 self.city = self.driver.find_element(*SignupLocators_7.By_mailing_city_field)
                 self.state = self.driver.find_element(*SignupLocators_7.By_mailing_state_field)
                 self.zipcode = self.driver.find_element(*SignupLocators_7.By_mailing_zip_field)
+                report_event_and_log(self.driver, "Selected NO for 'same mailing address'")
+
+    def fill_page_and_submit(self, radio_op, address, city, state, zip):
+        self.click_yes_no(radio_op)
+        if radio_op == "NO":
+            self.set_text_field(self.address, address)
+            self.set_text_field(self.city, city)
+            self.select_from_dropdown(self.state, state)
+            self.set_text_field(self.zipcode, zip)
+        if self.next_btn.is_enabled():
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check if next button is enabled after filling fields", 
+                "Next button is enabled",
+                "Next button is enabled",
+                True,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
+            self.click_next()
+        else:
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check if next button is enabled after filling fields", 
+                "Next button is enabled",
+                "Next button is disabled",
+                False,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
 
 class ApprovalPage(BasePage):
-    pass
+    def __init__(self, driver):
+        self.wait_for_element(self, driver.find_element(*ApprovalPageLocators.By_thank_you_message), 120)
+        report_event_and_log(self.driver, "Loaded Approval Page")
+
+
+    
     
 
