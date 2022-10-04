@@ -41,12 +41,12 @@ class HomePage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
         self.getstarted_btn = self.driver.find_element(*HomePageLocators.By_getstarted_btn)
-        logging.getLogger(self.driver.loggingID).info("Loaded Home page")
+        log_wrapper(self.driver, "Loaded Home page")
 
     def click_getstarted(self):
         self.getstarted_btn.click()
         self.wait_for_element(self, SignupLocators_1.By_last_name_field)
-        logging.getLogger(self.driver.loggingID).info("Clicked signup button")
+        log_wrapper(self.driver, "Clicked signup button")
         self.reporter[self.testID].reportEvent("Clicked signup button", False, "")
 
 
@@ -90,7 +90,7 @@ class BaseSignupPage(BasePage):
     def click_back(self, locatorToWaitFor):
         self.driver.find_element(*BaseSignupPageLocators.By_back_btn).click()
         self.wait_for_element(self, locatorToWaitFor)
-        logging.getLogger(self.driver.loggingID).info("Clicked back button")
+        log_wrapper(self.driver, "Clicked back button")
         report_event_and_log(
             self.driver,
             "Clicked 'back' button"

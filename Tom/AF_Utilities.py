@@ -4,16 +4,31 @@ import logging
 from typing import Callable, Union
 import mysql.connector
 from mysql.connector import Error
-import random, string, time
+import random, string, time, inspect
+import pathlib
 from Outlook import Outlook_App
 from openpyxl import load_workbook
 
-def report_event_and_log(
-    driver, 
-    message: str, 
-):
-    logging.getLogger(driver.loggingID).info(message)
+def report_event_and_log(driver, message: str):
     driver.reporter[driver.testID].reportEvent(message, False, "")
+    func = inspect.currentframe().f_back.f_code
+    path = pathlib.PurePath(func.co_filename)
+    logging.getLogger(driver.loggingID).info("{%s in %s:%i} - %s" % (
+        func.co_name,
+        path.name,
+        func.co_firstlineno,
+        message
+    ))
+
+def log_wrapper(driver, message):
+    func = inspect.currentframe().f_back.f_code
+    path = pathlib.PurePath(func.co_filename)
+    logging.getLogger(driver.loggingID).info("{%s in %s:%i} - %s" % (
+        func.co_name,
+        path.name,
+        func.co_firstlineno,
+        message
+    ))
 
 def load_excel_sheet(driver, rowName):
     wb = load_workbook(filename = 'AF_Register_Bank_Member.xlsx', data_only=True)
@@ -23,16 +38,16 @@ def load_excel_sheet(driver, rowName):
         if row[0].value == rowName:
             for i in range (2, 22):
                 driver.data[sheet.cell(column=i, row=1).value] = sheet.cell(column=i, row=row[0].row).value
-            logging.getLogger(driver.loggingID).info("Loaded excel data")
+            log_wrapper(driver, "Loaded excel data")
 
 def check_for_responsive(driver):
-    logging.getLogger(driver.loggingID).info("Checking for responsive webpage")
+    log_wrapper(driver, "Checking for responsive webpage")
     if driver.get_window_size()['width'] < 550:
         driver.responsive = True
-        logging.getLogger(driver.loggingID).info("Detected responsive")
+        log_wrapper(driver, "Detected responsive")
     else:
         driver.responsive = False
-        logging.getLogger(driver.loggingID).info("Didn't detect responsive")
+        log_wrapper(driver, "Didn't detect responsive")
 
 def check_outlook_confirmation(driver, timeout=60):
     timer = 0
@@ -40,7 +55,7 @@ def check_outlook_confirmation(driver, timeout=60):
     while obj.search_by_subject("Welcome", 6) == -1 and timer < timeout:
         timer += 1
         time.sleep(1)
-        logging.getLogger(driver.loggingID).info(
+        log_wrapper(driver, 
             "Waiting for Outlook confirmation " + str(timer) + "/" + str(timeout) + "s"
         )
 
@@ -51,7 +66,7 @@ def check_outlook_confirmation(driver, timeout=60):
             "Confirmation email wasn't received after " + str(timeout) + " seconds",
             False
         )
-        logging.getLogger(driver.loggingID).info("Confirmation email wasn't received after " + str(timeout) + " seconds")
+        log_wrapper(driver, "Confirmation email wasn't received after " + str(timeout) + " seconds")
 
     else:
         driver.reporter[driver.testID].reportStep(
@@ -60,7 +75,7 @@ def check_outlook_confirmation(driver, timeout=60):
             "Confirmation email was received after " + str(timer) + " seconds",
             True
         )
-        logging.getLogger(driver.loggingID).info("Confirmation email was received after " + str(timer) + " seconds")
+        log_wrapper(driver, "Confirmation email was received after " + str(timer) + " seconds")
 
 
 
@@ -75,9 +90,9 @@ def create_aline_sql_connection(driver):
             passwd='!A&8vYOKSUO&X9Zt',
             database='alinedb'
         )
-        logging.getLogger(driver.loggingID).info("MySQL Database connection sucessful")
+        log_wrapper(driver, "MySQL Database connection sucessful")
     except Error as err:
-        logging.getLogger(driver.loggingID).info(f"Error: '{err}'")
+        log_wrapper(driver, f"Error: '{err}'")
 
     return connection
 
@@ -89,16 +104,16 @@ def read_query(driver, connection, query):
         result = cursor.fetchall()
         return result
     except Error as err:
-        logging.getLogger(driver.loggingID).info(f"Error: '{err}'")
+        log_wrapper(driver, f"Error: '{err}'")
 
 def execute_query(driver, connection, query):
     cursor = connection.cursor()
     try:
         cursor.execute(query)
         connection.commit()
-        logging.getLogger(driver.loggingID).info("Query successful")
+        log_wrapper(driver, "Query successful")
     except Error as err:
-        logging.getLogger(driver.loggingID).info(f"Error '{err}'")
+        log_wrapper(driver, f"Error '{err}'")
 
 def find_and_update_email(driver, email):
     connection = create_aline_sql_connection(driver)
