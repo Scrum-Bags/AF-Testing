@@ -75,6 +75,7 @@ def check_outlook_confirmation(driver, timeout=60):
             "Confirmation email was received after " + str(timer) + " seconds",
             True
         )
+        obj.delete_emails_in_folder(6)
         log_wrapper(driver, "Confirmation email was received after " + str(timer) + " seconds")
 
 
