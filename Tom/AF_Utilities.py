@@ -31,7 +31,7 @@ def log_wrapper(driver, message):
     ))
 
 def load_excel_sheet(driver, rowName):
-    wb = load_workbook(filename = 'AF_Register_Bank_Member.xlsx', data_only=True)
+    wb = load_workbook(filename = 'AF_Register_Bank_Member.xlsm', data_only=True)
     sheet = wb['RegisterBank']
     driver.data = {}
     for row in sheet.rows:
