@@ -19,10 +19,14 @@ class BasePage:
     @staticmethod
     def wait_for_element(self, locator, timeout = 20):
         try: 
+            element_name = locator[1]
             WebDriverWait(self.driver, timeout).until(EC.presence_of_element_located(locator))
+            log_wrapper(self.driver, "Waiting for element " + element_name) #TODO add element identifier
         except:
+            log_wrapper(self.driver, "Couldn't find element " + element_name)
             return False
         else:
+            log_wrapper(self.driver, "Found element " + element_name)
             return True
     
     @staticmethod
@@ -98,8 +102,8 @@ class BaseSignupPage(BasePage):
 
 class SignupPage_1(BaseSignupPage):
     def __init__(self, driver):
-        self.wait_for_element(self, SignupLocators_1.By_first_name_field)
         super().__init__(driver)
+        self.wait_for_element(self, SignupLocators_1.By_first_name_field)
         self.first_name = self.driver.find_element(*SignupLocators_1.By_first_name_field)
         self.last_name = self.driver.find_element(*SignupLocators_1.By_last_name_field)
         self.email = self.driver.find_element(*SignupLocators_1.By_email_field)
@@ -156,8 +160,8 @@ class SignupPage_1(BaseSignupPage):
 
 class SignupPage_2(BaseSignupPage):
     def __init__(self, driver):
-        self.wait_for_element(self, SignupLocators_2.By_spending_btn)
         super().__init__(driver)
+        self.wait_for_element(self, SignupLocators_2.By_spending_btn)
         self.spending_btn = self.driver.find_element(*SignupLocators_2.By_spending_btn)
         self.stashing_btn = self.driver.find_element(*SignupLocators_2.By_stashing_btn)
         self.both_btn = self.driver.find_element(*SignupLocators_2.By_both_btn)
@@ -220,8 +224,8 @@ class SignupPage_2(BaseSignupPage):
 
 class SignupPage_3(BaseSignupPage):
     def __init__(self, driver):
-        self.wait_for_element(self, SignupLocators_3.By_DOB_field)
         super().__init__(driver)
+        self.wait_for_element(self, SignupLocators_3.By_DOB_field)
         self.DOB_field = self.driver.find_element(*SignupLocators_3.By_DOB_field)
         self.gender_select = self.driver.find_element(*SignupLocators_3.By_gender_select)
         self.phone_field = self.driver.find_element(*SignupLocators_3.By_phone_field)
@@ -277,8 +281,8 @@ class SignupPage_3(BaseSignupPage):
 
 class SignupPage_4(BaseSignupPage):
     def __init__(self, driver):
-        self.wait_for_element(self, SignupLocators_4.By_SSN_field)
         super().__init__(driver)
+        self.wait_for_element(self, SignupLocators_4.By_SSN_field)
         self.SSN_field = self.driver.find_element(*SignupLocators_4.By_SSN_field)
         self.drivers_field = self.driver.find_element(*SignupLocators_4.By_drivers_field)
         report_event_and_log(self.driver, "Loaded Signup page 4")
@@ -331,8 +335,8 @@ class SignupPage_4(BaseSignupPage):
 
 class SignupPage_5(BaseSignupPage):
     def __init__(self, driver):
-        self.wait_for_element(self, SignupLocators_5.By_income_field)
         super().__init__(driver)
+        self.wait_for_element(self, SignupLocators_5.By_income_field)
         self.income_field = self.driver.find_element(*SignupLocators_5.By_income_field)
         self.pay_freq_select = self.driver.find_element(*SignupLocators_5.By_pay_freq_select)
         report_event_and_log(self.driver, "Loaded Signup page 5")
@@ -385,8 +389,8 @@ class SignupPage_5(BaseSignupPage):
 
 class SignupPage_6(BaseSignupPage):
     def __init__(self, driver):
-        self.wait_for_element(self, SignupLocators_6.By_address_field)
         super().__init__(driver)
+        self.wait_for_element(self, SignupLocators_6.By_address_field)
         self.address_field = self.driver.find_element(*SignupLocators_6.By_address_field)
         self.city_field = self.driver.find_element(*SignupLocators_6.By_city_field)
         self.state_select = self.driver.find_element(*SignupLocators_6.By_state_select)
@@ -445,8 +449,8 @@ class SignupPage_6(BaseSignupPage):
 
 class SignupPage_7(BaseSignupPage):
     def __init__(self, driver):
-        self.wait_for_element(self, SignupLocators_7.By_yes_radio)
         super().__init__(driver)
+        self.wait_for_element(self, SignupLocators_7.By_yes_radio)
         self.yes_radio = self.driver.find_element(*SignupLocators_7.By_yes_radio)
         self.no_radio = self.driver.find_element(*SignupLocators_7.By_no_radio)
         report_event_and_log(self.driver, "Loaded Signup page 7")
@@ -500,7 +504,24 @@ class ApprovalPage(BasePage):
         report_event_and_log(self.driver, "Loaded Approval Page")
 
     def check_approval_message(self):
-        print(self.driver.find_element(*ApprovalPageLocators.By_approval_text).get_attribute('textContent'))
+        if self.driver.find_element(*ApprovalPageLocators.By_approval_text).get_attribute('textContent') == 'Your application was approved.':
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check that approval message appears",
+                "Approval message confirmed",
+                "Approval message confirmed",
+                True,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
+        else:
+            self.driver.reporter[self.driver.testID].reportStep(
+                "Check that approval message appears",
+                "Approval message confirmed",
+                "Approval message error",
+                False,
+                "",
+                screenshotCallback=self.driver.save_screenshot
+            )
 
     
     
