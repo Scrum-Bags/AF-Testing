@@ -81,47 +81,47 @@ class Test_LoginLogout(unittest.TestCase):
         wb.close()
 
 
-##    def test_004_forgotpassword_neg(self):
-##        #setup
-##        path = self.path
-##        wb = openpyxl.load_workbook(path,read_only=True)
-##        ws = wb["TC_004"]
-##        reporter = self.reporter
-##        driver = self.driver
-##        #repeat test with each data row
-##        for row in ws.iter_rows(min_row=2):
-##            print("##############################################")
-##            #set driver size
-##            res = row[2].value.split("x")
-##            if len(res)==2:
-##                driver.set_window_size(int(res[0]), int(res[1]))
-##            elif res[0]=="fullscreen":
-##                driver.fullscreen_window()
-##                driver.manage().window().maximize();
-##            elif res[0] is None:
-##                pass
-##            #print(driver.get_window_size())
-##            #set up reporter
-##            testID="TC_004" +"_"+ ''.join(random.choices(string.ascii_lowercase, k=5))
-##            reporter.addTestCase(testID, "JS_TC_004", "Negative Test the Forgot Password process for Aline Financial Members")
-##            reporter[testID].reportEvent("Set resolution for testing",False,res)
-##            #login process
-##            loginObj = AF_MemberLogin(driver)
-##            loginObj.Launch_Login_Page()
-##            newPassword = loginObj.forgot_password_neg(reporter[testID], self.screenshotPath, row[0].value, row[1].value)
-##            #update pseudo db
-##            wbup = openpyxl.load_workbook("D:\\TestingResources\\AlineFinancial\\DataSheets\\UserAndPassword.xlsm", keep_vba=True)
-##            wsup = wbup["UserAndPassword"]
-##            for rowup in wsup.iter_rows(min_row=2):
-##                if rowup[0].value == row[0].value and newPassword!=-1:
-##                    #print(rowup[0].value)
-##                    #print(rowup[1].value)
-##                    rowup[1].value = newPassword
-##                    #print(rowup[1].value)
-##                    break
-##            wbup.save("D:\\TestingResources\\AlineFinancial\\DataSheets\\UserAndPassword.xlsm")
-##            wbup.close()
-##        wb.close()
+    def test_004_forgotpassword_neg(self):
+        #setup
+        path = self.path
+        wb = openpyxl.load_workbook(path,read_only=True)
+        ws = wb["TC_004"]
+        reporter = self.reporter
+        driver = self.driver
+        #repeat test with each data row
+        for row in ws.iter_rows(min_row=2):
+            print("##############################################")
+            #set driver size
+            res = row[2].value.split("x")
+            if len(res)==2:
+                driver.set_window_size(int(res[0]), int(res[1]))
+            elif res[0]=="fullscreen":
+                driver.fullscreen_window()
+                driver.manage().window().maximize();
+            elif res[0] is None:
+                pass
+            #print(driver.get_window_size())
+            #set up reporter
+            testID="TC_004" +"_"+ ''.join(random.choices(string.ascii_lowercase, k=5))
+            reporter.addTestCase(testID, "JS_TC_004", "Negative Test the Forgot Password process for Aline Financial Members")
+            reporter[testID].reportEvent("Set resolution for testing",False,res)
+            #login process
+            loginObj = AF_MemberLogin(driver)
+            loginObj.Launch_Login_Page()
+            newPassword = loginObj.forgot_password_neg(reporter[testID], self.screenshotPath, row[0].value, row[1].value)
+            #update pseudo db
+            wbup = openpyxl.load_workbook("D:\\TestingResources\\AlineFinancial\\DataSheets\\UserAndPassword.xlsm", keep_vba=True)
+            wsup = wbup["UserAndPassword"]
+            for rowup in wsup.iter_rows(min_row=2):
+                if rowup[0].value == row[0].value and newPassword!=-1:
+                    #print(rowup[0].value)
+                    #print(rowup[1].value)
+                    rowup[1].value = newPassword
+                    #print(rowup[1].value)
+                    break
+            wbup.save("D:\\TestingResources\\AlineFinancial\\DataSheets\\UserAndPassword.xlsm")
+            wbup.close()
+        wb.close()
 ##
 ##    def test_004_login(self):
 ##        #setup
