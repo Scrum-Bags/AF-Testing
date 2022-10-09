@@ -36,7 +36,8 @@ class AF_Member_Dashboard_Objects(object):
     #compact screen stuff
     By_user_dropdown_c = (By.XPATH, "/html/body/app-root/app-dashboard/app-dashboard-nav/div[1]/div[1]/div/div[2]/button")
     By_signout_c = (By.XPATH, "//*[@id='dashboard-nav-drawer']/div[3]/button")
-    
+    #dsahboard mobile indicator
+    By_summary_link = (By.XPATH, "/html/body/app-root/app-dashboard/app-dashboard-nav/div[2]/div/ul/li[1]/a")
 
 
 class AF_Member_ForgotPassword_Objects(object):

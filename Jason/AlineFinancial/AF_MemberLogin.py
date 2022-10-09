@@ -29,6 +29,10 @@ class AF_MemberLogin():
     def Launch_Login_Page(self):
         self.driver.get("http://uftcapstone-dev-member.s3-website-us-east-1.amazonaws.com/login")
 
+    def MobileCheck(self):
+        #print(self.driver.find_element(*AF_Member_Dashboard_Objects.By_summary_link).size["height"])
+        return not self.driver.find_element(*AF_Member_Dashboard_Objects.By_summary_link).size["height"] > 0
+
     def login(self, reporter, ssPath, username, password):
         driver = self.driver
         actions = ActionChains(driver)
@@ -80,34 +84,24 @@ class AF_MemberLogin():
         error = ""
         located = False
         print("Looking for dropdown button")
-        if len(driver.find_elements(*AF_Member_Dashboard_Objects.By_user_dropdown_f))>0:
-            try:
-                driver.find_element(*AF_Member_Dashboard_Objects.By_user_dropdown_f).click()
-                WebDriverWait(driver, 5).until(EC.element_to_be_clickable((AF_Member_Dashboard_Objects.By_signout_f)))
-                reporter.reportStep("Click sidebar if visible","Settings button should appear","If sidebar was visible, it was clicked successfully",True,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
-                driver.find_element(*AF_Member_Dashboard_Objects.By_signout_f).click()
-                located = True
-                print("Dropdown clicked successfully")
-                print("Logout button clicked")
-            except Exception as e:
-                #reporter.reportStep("Click sidebar if visible","Settings button should appear","Unable to click sidebar button",True,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
-                #driver.get("http://uftcapstone-dev-member.s3-website-us-east-1.amazonaws.com/login")
-                #print("crud")
-                pass
-        if len(driver.find_elements(*AF_Member_Dashboard_Objects.By_user_dropdown_c))>0 and not located:
-            #print("morp")
-            try:
-                driver.find_element(*AF_Member_Dashboard_Objects.By_user_dropdown_c).click()
-                WebDriverWait(driver, 5).until(EC.element_to_be_clickable((AF_Member_Dashboard_Objects.By_signout_c)))
-                reporter.reportStep("Click sidebar if visible","Settings button should appear","If sidebar was visible, it was clicked successfully",True,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
-                driver.find_element(*AF_Member_Dashboard_Objects.By_signout_c).click()
-                located = True
-                print("Dropdown clicked successfully")
-                print("Logout button clicked")
-            except:
-                #reporter.reportStep("Click sidebar if visible","Settings button should appear","Unable to click sidebar button",True,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
-                #driver.get("http://uftcapstone-dev-member.s3-website-us-east-1.amazonaws.com/login")
-                print("Unable to locate dropdown button")
+        mobile = self.MobileCheck()
+        if not mobile:
+            driver.find_element(*AF_Member_Dashboard_Objects.By_user_dropdown_f).click()
+            WebDriverWait(driver, 5).until(EC.element_to_be_clickable((AF_Member_Dashboard_Objects.By_signout_f)))
+            reporter.reportStep("Click sidebar if visible","Settings button should appear","If sidebar was visible, it was clicked successfully",True,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
+            driver.find_element(*AF_Member_Dashboard_Objects.By_signout_f).click()
+            located = True
+            print("Dropdown clicked successfully")
+            print("Logout button clicked")
+        else:
+            driver.find_element(*AF_Member_Dashboard_Objects.By_user_dropdown_c).click()
+            WebDriverWait(driver, 5).until(EC.element_to_be_clickable((AF_Member_Dashboard_Objects.By_signout_c)))
+            reporter.reportStep("Click sidebar if visible","Settings button should appear","If sidebar was visible, it was clicked successfully",True,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
+            driver.find_element(*AF_Member_Dashboard_Objects.By_signout_c).click()
+            located = True
+            print("Dropdown clicked successfully")
+            print("Logout button clicked")
+        
         if not located:
             reporter.reportStep("Press logout button","Login page should appear","Unable to locate logout button",False,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
             driver.get("http://uftcapstone-dev-member.s3-website-us-east-1.amazonaws.com/login")
