@@ -54,10 +54,10 @@ class AF_MemberLogin():
         passwordFieldObj = driver.find_element(*AF_Member_Login_Objects.By_password_field)
         passwordFieldObj.send_keys(password)
         if passwordFieldObj.get_attribute('value') == password:
-            reporter.reportStep("Put password in dialog box","Password should appear in the dialog box","Password successfully placed in dialog box",True,"password = " + password, driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
+            reporter.reportStep("Put password in dialog box","Password should appear in the dialog box","Password successfully placed in dialog box",True,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
             print("Password successfully placed in dialog box")
         else:
-            reporter.reportStep("Put password in dialog box","Password should appear in the dialog box","Password not place in dialog box",False,"password = " + password, driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
+            reporter.reportStep("Put password in dialog box","Password should appear in the dialog box","Password not place in dialog box",False,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
             print("Password not place in dialog box")
             print("Stopping test")
             return
