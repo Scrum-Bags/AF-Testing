@@ -29,7 +29,7 @@ class AF_Register_Bank_Member(unittest.TestCase):
     def setUpClass(cls):
         cls.edge_options = Options()
         cls.edge_options.add_experimental_option('excludeSwitches', ['enable-logging'])
-        #cls.edge_options.headless = True
+        cls.edge_options.headless = True
         cls.driver = webdriver.Edge(options=cls.edge_options)
         cls.driver.loggingID = "AF_Register_Bank_Member"
         cls.driver.currentExcelRow = 1
@@ -40,7 +40,6 @@ class AF_Register_Bank_Member(unittest.TestCase):
 
     def setUp(self):
         self.driver.get("http://uftcapstone-dev-landing.s3-website-us-east-1.amazonaws.com/")
-        #log_wrapper(self.driver, "Waiting for home page to load")
         log_wrapper(self.driver, "Waiting for home page to load")
         BasePage.wait_for_element(self, HomePageLocators.By_getstarted_btn, 30)
         self.driver.currentExcelRow += 1
@@ -122,7 +121,7 @@ class AF_Register_Bank_Member(unittest.TestCase):
 
         #Approval page
         page = ApprovalPage(driver)
-        page.check_approval_message() #TODO add report step
+        page.check_approval_message()
         check_outlook_confirmation(driver, 120)
 
     ###
