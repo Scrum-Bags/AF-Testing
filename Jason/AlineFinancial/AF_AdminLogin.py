@@ -61,7 +61,11 @@ class AF_Login():
         signinObj = driver.find_element(*AF_Admin_Login_Objects.By_sign_in)
         signinObj.click()
         #wait for login to load
-        WebDriverWait(driver, 60).until(EC.presence_of_element_located((AF_Admin_Home_Objects.By_settings_menu)))
+        try:
+            WebDriverWait(driver, 60).until(EC.presence_of_element_located((AF_Admin_Home_Objects.By_settings_menu)))
+        except:
+            reporter.reportStep("Press submit and login","Admin dashboard should appear","Login unsuccessful",False,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
+            print("Login unsuccessful")
         if len(driver.find_elements(*AF_Admin_Home_Objects.By_settings_menu))>0:
             reporter.reportStep("Press submit and login","Admin dashboard should appear","Login successful",True,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
             print("Login successful")
@@ -150,7 +154,11 @@ class AF_Login():
             WebDriverWait(driver, 60).until(EC.text_to_be_present_in_element((AF_Admin_Login_Objects.By_sign_in_error), "Please enter credentials."))
             print("Login error detected - Blank fields")
         else:
-            WebDriverWait(driver, 60).until(EC.text_to_be_present_in_element((AF_Admin_Login_Objects.By_sign_in_error), "Invalid Credentials"))
+            try:
+                WebDriverWait(driver, 60).until(EC.text_to_be_present_in_element((AF_Admin_Login_Objects.By_sign_in_error), "Invalid Credentials"))
+            except:
+                reporter.reportStep("Press submit and login","A login error should appear","Login error did not appear",False,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
+                print("No error message appeared")
         if len(driver.find_elements(*AF_Admin_Login_Objects.By_sign_in_error))>0:
             reporter.reportStep("Press submit and login","A login error should appear","Login unsuccessful and an error appeared",True,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
             print("Login error detected - Invalid Credentials")
