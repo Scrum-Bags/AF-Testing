@@ -9,7 +9,7 @@ import time
 import random
 import string
 import openpyxl
-import win32com.client as win32
+##import win32com.client as win32
 
 
 class Test_LoginLogout(unittest.TestCase):
@@ -20,13 +20,13 @@ class Test_LoginLogout(unittest.TestCase):
         self.reporter = HTML_Reporting.TestSuiteReporter(self.timestr, "D:\\TestingResources\\AlineFinancial\\TestResults\\", "Jason")
         self.screenshotPath = "D:\\TestingResources\\AlineFinancial\\TestResults\\.screenshots\\"
         self.path = "D:\\TestingResources\\AlineFinancial\\DataSheets\\InputData.xlsm"
-        self.xl = win32.Dispatch("Excel.Application")
-        #self.xl.Interactive = False
-        #self.xl.Visible = False
-        xlbook = self.xl.Workbooks.Open(self.path)
-        self.xl.Application.Run("InputData.xlsm!Module1.ResetLastCell()")
-        xlbook.Save()
-        self.xl.Application.Quit()
+##        self.xl = win32.Dispatch("Excel.Application")
+##        #self.xl.Interactive = False
+##        #self.xl.Visible = False
+##        xlbook = self.xl.Workbooks.Open(self.path)
+##        self.xl.Application.Run("InputData.xlsm!Module1.ResetLastCell()")
+##        xlbook.Save()
+##        self.xl.Application.Quit()
 
     def setUp(self):
         options = Options()
@@ -96,6 +96,7 @@ class Test_LoginLogout(unittest.TestCase):
             #set up reporter
             testID="TC_002" +"_"+ ''.join(random.choices(string.ascii_lowercase, k=5))
             reporter.addTestCase(testID, "JS_TC_002", "Attempt to login to Aline Financial - Admin with bad credentials")
+            reporter[testID].reportEvent("Set resolution for testing",False,res)
             #login process
             loginObj = AF_Login(driver)
             loginObj.Launch_Login_Page()
