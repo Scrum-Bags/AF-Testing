@@ -17,9 +17,12 @@ class Test_LoginLogout(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(Test_LoginLogout, self).__init__(*args, **kwargs)
         self.timestr = time.strftime("%Y-%m-%d--%I_%M_%S%p")
-        self.reporter = HTML_Reporting.TestSuiteReporter(self.timestr, "D:\\TestingResources\\AlineFinancial\\TestResults\\", "Jason")
-        self.screenshotPath = "D:\\TestingResources\\AlineFinancial\\TestResults\\.screenshots\\"
-        self.path = "D:\\TestingResources\\AlineFinancial\\DataSheets\\InputData.xlsm"
+        #self.reporter = HTML_Reporting.TestSuiteReporter(self.timestr, "D:\\TestingResources\\AlineFinancial\\TestResults\\", "Jason")
+        self.reporter = HTML_Reporting.TestSuiteReporter(self.timestr, "./", "Jason")
+        #self.screenshotPath = "D:\\TestingResources\\AlineFinancial\\TestResults\\.screenshots\\"
+        self.screenshotPath = ""
+        #self.path = "D:\\TestingResources\\AlineFinancial\\DataSheets\\InputData.xlsm"
+        self.path = "InputData.xlsm"
 ##        self.xl = win32.Dispatch("Excel.Application")
 ##        #self.xl.Interactive = False
 ##        #self.xl.Visible = False
