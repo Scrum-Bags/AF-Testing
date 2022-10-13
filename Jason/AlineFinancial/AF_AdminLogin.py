@@ -60,6 +60,7 @@ class AF_Login():
         #click sign in button
         signinObj = driver.find_element(*AF_Admin_Login_Objects.By_sign_in)
         signinObj.click()
+        print("Clicking sign in button")
         #wait for login to load
         try:
             WebDriverWait(driver, 60).until(EC.presence_of_element_located((AF_Admin_Home_Objects.By_settings_menu)))
@@ -152,6 +153,7 @@ class AF_Login():
         #click sign in button
         signinObj = driver.find_element(*AF_Admin_Login_Objects.By_sign_in)
         signinObj.click()
+        print("Clicking sign in button")
         #wait for error to load
         if username=="" or password=="":
             WebDriverWait(driver, 60).until(EC.text_to_be_present_in_element((AF_Admin_Login_Objects.By_sign_in_error), "Please enter credentials."))
