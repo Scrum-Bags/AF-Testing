@@ -161,14 +161,10 @@ class AF_Login():
         else:
             try:
                 WebDriverWait(driver, 60).until(EC.text_to_be_present_in_element((AF_Admin_Login_Objects.By_sign_in_error), "Invalid Credentials"))
+                reporter.reportStep("Press submit and login","A login error should appear","Login unsuccessful and an error appeared",True,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
+                print("Login error detected - Invalid Credentials")
             except:
                 reporter.reportStep("Press submit and login","A login error should appear","Login error did not appear",False,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
                 print("No error message appeared")
                 return
-        if len(driver.find_elements(*AF_Admin_Login_Objects.By_sign_in_error))>0:
-            reporter.reportStep("Press submit and login","A login error should appear","Login unsuccessful and an error appeared",True,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
-            print("Login error detected - Invalid Credentials")
-        else:
-            reporter.reportStep("Press submit and login","A login error should appear","Login error did not appear",False,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
-            print("No error message appeared")
         
