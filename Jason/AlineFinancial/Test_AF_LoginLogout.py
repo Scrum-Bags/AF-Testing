@@ -9,6 +9,8 @@ import time
 import random
 import string
 import openpyxl
+import boto3
+from S3_Tool import upload_file
 ##import win32com.client as win32
 
 
@@ -30,6 +32,7 @@ class Test_LoginLogout(unittest.TestCase):
 ##        self.xl.Application.Run("InputData.xlsm!Module1.ResetLastCell()")
 ##        xlbook.Save()
 ##        self.xl.Application.Quit()
+
 
     def setUp(self):
         options = Options()
@@ -74,8 +77,11 @@ class Test_LoginLogout(unittest.TestCase):
             #time.sleep(3)
             loginObj.AF_logout(reporter[testID], self.screenshotPath)
             #time.sleep(5)
+        #upload_file(self.timestr + ".html","scrumbags-reports")
 
     def test_002_login_neg(self):
+##        print("EGEGEGEEEEEEEEEEEEEEEEEEEEEEEEEE")
+##        time.sleep(30)
         #setup
         path = self.path
         wb = openpyxl.load_workbook(path)
@@ -107,13 +113,24 @@ class Test_LoginLogout(unittest.TestCase):
             #time.sleep(3)
             #loginObj.AO_logout(reporter[testID], self.screenshotPath)
             #time.sleep(5)
-
+        #upload_file(self.timestr + ".html","scrumbags-reports")
 
 
     def tearDown(self):
         self.driver.close()
-        
+        del self.reporter
+        upload_file(self.timestr + ".html","scrumbags-reports")
+
+
+##    @classmethod
+##    def tearDownClass(self):
+##        upload_file(self.timestr,"scrumbags-reports")
 
 if __name__ == "__main__":
+##    suite = unittest.TestSuite((unittest.makeSuite(Test_LoginLogout),))
+##    result = unittest.TextTestRunner().run(suite)
+##    #Test_LoginLogout.disconnect()
     unittest.main(warnings='ignore')
-    #unittest.main()
+##    print(tester.timestr)
+##    print(upload_file(tester.timestr + ".html","scrumbags-reports"))
+##    #unittest.main()
