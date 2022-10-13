@@ -139,14 +139,16 @@ class AF_Login():
             print("Username successfully placed in dialog box")
         else:
             reporter.reportStep("Put username in dialog box","Username should appear in the dialog box","Username not place in dialog box",False,"username = " + username, userFieldObj.screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
-            print("Username not place in dialog box")
+            print("Username not placed in dialog box")
         #set password field
         passwordFieldObj = driver.find_element(*AF_Admin_Login_Objects.By_password_field)
         passwordFieldObj.send_keys(password)
         if passwordFieldObj.get_attribute('value') == password:
             reporter.reportStep("Put password in dialog box","Password should appear in the dialog box","Password successfully placed in dialog box",True,"", passwordFieldObj.screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
+            print("Password successfully placed in dialog box")
         else:
             reporter.reportStep("Put password in dialog box","Password should appear in the dialog box","Password not place in dialog box",False,"", passwordFieldObj.screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
+            print("Password not placed in dialog box")
         #click sign in button
         signinObj = driver.find_element(*AF_Admin_Login_Objects.By_sign_in)
         signinObj.click()
