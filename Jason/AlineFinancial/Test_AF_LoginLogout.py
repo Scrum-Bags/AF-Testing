@@ -118,7 +118,8 @@ class Test_LoginLogout(unittest.TestCase):
 
 
     def tearDown(self):
-        self.driver.close()
+        #self.driver.close()
+        self.driver.quit()
         del self.reporter
         upload_file(self.timestr + ".html","scrumbags-reports")
         try:
@@ -126,10 +127,6 @@ class Test_LoginLogout(unittest.TestCase):
         except:
             print("Unable to upload screenshots")
 
-
-##    @classmethod
-##    def tearDownClass(self):
-##        upload_file(self.timestr,"scrumbags-reports")
 
 if __name__ == "__main__":
 ##    suite = unittest.TestSuite((unittest.makeSuite(Test_LoginLogout),))
