@@ -2,8 +2,8 @@ import unittest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-#from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.chrome.options import Options
+#from selenium.webdriver.firefox.options import Options
 from AF_AdminLogin import AF_Login
 import HTML_Reporting
 import time
@@ -12,6 +12,7 @@ import string
 import openpyxl
 import boto3
 from S3_Tool import upload_file
+import os
 ##import win32com.client as win32
 
 
@@ -36,11 +37,11 @@ class Test_LoginLogout(unittest.TestCase):
 
 
     def setUp(self):
+        #os.system("taskkill /f /im geckodriver.exe /T") 
         options = Options()
         options.headless = True
-        self.driver = webdriver.Firefox(options=options)
-        #self.driver.set_window_size(400,400)
-        #self.driver.get("http://uftcapstone-dev-admin.s3-website-us-east-1.amazonaws.com/login")
+        self.driver = webdriver.Chrome(options=options)
+        #self.driver = webdriver.Firefox(options=options)
 
     def test_001_login(self):
         #setup
