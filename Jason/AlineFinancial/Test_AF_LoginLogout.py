@@ -2,8 +2,8 @@ import unittest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-#from selenium.webdriver.firefox.options import Options
+#from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.firefox.options import Options
 from AF_AdminLogin import AF_Login
 import HTML_Reporting
 import time
@@ -40,8 +40,8 @@ class Test_LoginLogout(unittest.TestCase):
         #os.system("taskkill /f /im geckodriver.exe /T") 
         options = Options()
         options.headless = True
-        self.driver = webdriver.Chrome(options=options)
-        #self.driver = webdriver.Firefox(options=options)
+        #self.driver = webdriver.Chrome(options=options)
+        self.driver = webdriver.Firefox(options=options)
 
     def test_001_login(self):
         #setup
