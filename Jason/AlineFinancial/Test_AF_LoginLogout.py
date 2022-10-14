@@ -120,6 +120,10 @@ class Test_LoginLogout(unittest.TestCase):
         self.driver.close()
         del self.reporter
         upload_file(self.timestr + ".html","scrumbags-reports")
+        try:
+            upload_file(".screenshots","scrumbags-reports")
+        except:
+            print("Unable to upload screenshots")
 
 
 ##    @classmethod
