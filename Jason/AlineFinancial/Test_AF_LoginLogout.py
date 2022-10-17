@@ -22,13 +22,13 @@ class Test_LoginLogout(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super(Test_LoginLogout, self).__init__(*args, **kwargs)
-        self.timestr = time.strftime("%Y-%m-%d--%I_%M_%S%p")
-        #self.reporter = HTML_Reporting.TestSuiteReporter(self.timestr, "D:\\TestingResources\\AlineFinancial\\TestResults\\", "Jason")
-        self.reporter = HTML_Reporting.TestSuiteReporter(self.timestr, "./", "Jason")
-        #self.screenshotPath = "D:\\TestingResources\\AlineFinancial\\TestResults\\.screenshots\\"
-        self.screenshotPath = ""
-        #self.path = "D:\\TestingResources\\AlineFinancial\\DataSheets\\InputData.xlsm"
-        self.path = "InputData.xlsm"
+##        self.timestr = time.strftime("%Y-%m-%d--%I_%M_%S%p")
+##        #self.reporter = HTML_Reporting.TestSuiteReporter(self.timestr, "D:\\TestingResources\\AlineFinancial\\TestResults\\", "Jason")
+##        self.reporter = HTML_Reporting.TestSuiteReporter(self.timestr, "./", "Jason")
+##        #self.screenshotPath = "D:\\TestingResources\\AlineFinancial\\TestResults\\.screenshots\\"
+##        self.screenshotPath = ""
+##        #self.path = "D:\\TestingResources\\AlineFinancial\\DataSheets\\InputData.xlsm"
+##        self.path = "InputData.xlsm"
 ##        self.xl = win32.Dispatch("Excel.Application")
 ##        #self.xl.Interactive = False
 ##        #self.xl.Visible = False
@@ -37,13 +37,21 @@ class Test_LoginLogout(unittest.TestCase):
 ##        xlbook.Save()
 ##        self.xl.Application.Quit()
 
+    @classmethod
+    def setUpClass(cls):
+        cls.imageFolders = []
+        cls.timestr = time.strftime("%Y-%m-%d--%I_%M_%S%p")
+        cls.reporter = HTML_Reporting.TestSuiteReporter(cls.timestr, "./", "Jason")
+        cls.screenshotPath = ""
+        cls.path = "InputData.xlsm"
+
 
     def setUp(self): 
         options = Options()
         options.headless = True
         #self.driver = webdriver.Chrome(options=options)
         self.driver = webdriver.Firefox(options=options)
-        self.imageFolders = []
+        #self.imageFolders = []
 
     def test_001_login(self):
         #setup
@@ -82,8 +90,6 @@ class Test_LoginLogout(unittest.TestCase):
 
 
     def test_002_login_neg(self):
-##        print("EGEGEGEEEEEEEEEEEEEEEEEEEEEEEEEE")
-##        time.sleep(30)
         #setup
         path = self.path
         wb = openpyxl.load_workbook(path)
@@ -119,17 +125,18 @@ class Test_LoginLogout(unittest.TestCase):
     def tearDown(self):
         #self.driver.close()
         self.driver.quit()
-        del self.reporter
 
-        zipObj = zipfile.ZipFile(self.timestr+".zip", 'w')
-        zipObj.write(self.timestr + ".html")
 
-        for folder in self.imageFolders:
+    @classmethod
+    def tearDownClass(cls):
+        del cls.reporter
+        zipObj = zipfile.ZipFile(cls.timestr+".zip", 'w')
+        zipObj.write(cls.timestr + ".html")
+        for folder in cls.imageFolders:
             for image in os.listdir("./.screenshots/"+folder+"/"):
                 zipObj.write("./.screenshots/"+folder+"/"+image)
         zipObj.close()
-        upload_file(self.timestr+".zip","scrumbags-reports")
-
+        upload_file(cls.timestr+".zip","scrumbags-reports")
 
 if __name__ == "__main__":
 ##    suite = unittest.TestSuite((unittest.makeSuite(Test_LoginLogout),))
