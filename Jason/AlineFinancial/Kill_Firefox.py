@@ -1,6 +1,6 @@
 import os
 
-print(os.name)
+#print(os.name)
 
 if(os.name=='nt'):
     os.system("taskkill /f /im geckodriver.exe /T")

@@ -13,6 +13,8 @@ import openpyxl
 import boto3
 from S3_Tool import upload_file
 import os
+from os.path import basename
+import zipfile
 ##import win32com.client as win32
 
 
@@ -36,12 +38,12 @@ class Test_LoginLogout(unittest.TestCase):
 ##        self.xl.Application.Quit()
 
 
-    def setUp(self):
-        #os.system("taskkill /f /im geckodriver.exe /T") 
+    def setUp(self): 
         options = Options()
         options.headless = True
         #self.driver = webdriver.Chrome(options=options)
         self.driver = webdriver.Firefox(options=options)
+        self.imageFolders = []
 
     def test_001_login(self):
         #setup
@@ -69,64 +71,71 @@ class Test_LoginLogout(unittest.TestCase):
             
             #set up reporter
             testID="TC_001" +"_"+ ''.join(random.choices(string.ascii_lowercase, k=5))
+            self.imageFolders.append(testID)
             reporter.addTestCase(testID, "JS_TC_001", "Login to Aline Financial - Admin")
             reporter[testID].reportEvent("Set resolution for testing",False,res)
-
             #login process
             loginObj = AF_Login(driver)
             loginObj.Launch_Login_Page()
             loginObj.AF_login(reporter[testID], self.screenshotPath, row[0].value, row[1].value)
-            #time.sleep(3)
             loginObj.AF_logout(reporter[testID], self.screenshotPath)
-            #time.sleep(5)
-        #upload_file(self.timestr + ".html","scrumbags-reports")
 
-    def test_002_login_neg(self):
-##        print("EGEGEGEEEEEEEEEEEEEEEEEEEEEEEEEE")
-##        time.sleep(30)
-        #setup
-        path = self.path
-        wb = openpyxl.load_workbook(path)
-        ws = wb["TC_002"]
-        reporter = self.reporter
-        driver = self.driver
-        #repeat test with each data row
-        for row in ws.iter_rows(min_row=2):
 
-            print("##############################################")
-            #set driver size
-            res = row[2].value.split("x")
-            if len(res)==2:
-                driver.set_window_size(int(res[0]), int(res[1]))
-##            elif res[0]=="fullscreen":
-##                driver.fullscreen_window()
-##                driver.manage().window().maximize();
-            elif res[0] is None:
-                pass
-            
-            #set up reporter
-            testID="TC_002" +"_"+ ''.join(random.choices(string.ascii_lowercase, k=5))
-            reporter.addTestCase(testID, "JS_TC_002", "Attempt to login to Aline Financial - Admin with bad credentials")
-            reporter[testID].reportEvent("Set resolution for testing",False,res)
-            #login process
-            loginObj = AF_Login(driver)
-            loginObj.Launch_Login_Page()
-            loginObj.AF_bad_login(reporter[testID], self.screenshotPath, row[0].value, row[1].value)
-            #time.sleep(3)
-            #loginObj.AO_logout(reporter[testID], self.screenshotPath)
-            #time.sleep(5)
-        #upload_file(self.timestr + ".html","scrumbags-reports")
+##    def test_002_login_neg(self):
+####        print("EGEGEGEEEEEEEEEEEEEEEEEEEEEEEEEE")
+####        time.sleep(30)
+##        #setup
+##        path = self.path
+##        wb = openpyxl.load_workbook(path)
+##        ws = wb["TC_002"]
+##        reporter = self.reporter
+##        driver = self.driver
+##        #repeat test with each data row
+##        for row in ws.iter_rows(min_row=2):
+##
+##            print("##############################################")
+##            #set driver size
+##            res = row[2].value.split("x")
+##            if len(res)==2:
+##                driver.set_window_size(int(res[0]), int(res[1]))
+####            elif res[0]=="fullscreen":
+####                driver.fullscreen_window()
+####                driver.manage().window().maximize();
+##            elif res[0] is None:
+##                pass
+##            
+##            #set up reporter
+##            testID="TC_002" +"_"+ ''.join(random.choices(string.ascii_lowercase, k=5))
+##            self.imageFolders.append(testID)
+##            reporter.addTestCase(testID, "JS_TC_002", "Attempt to login to Aline Financial - Admin with bad credentials")
+##            reporter[testID].reportEvent("Set resolution for testing",False,res)
+##            #login process
+##            loginObj = AF_Login(driver)
+##            loginObj.Launch_Login_Page()
+##            loginObj.AF_bad_login(reporter[testID], self.screenshotPath, row[0].value, row[1].value)
+
 
 
     def tearDown(self):
         #self.driver.close()
         self.driver.quit()
         del self.reporter
-        upload_file(self.timestr + ".html","scrumbags-reports")
-        try:
-            upload_file(".screenshots","scrumbags-reports")
-        except:
-            print("Unable to upload screenshots")
+        #upload_file(self.timestr + ".html","scrumbags-reports")
+##        try:
+##            upload_file(".screenshots","scrumbags-reports")
+##        except:
+##            print("Unable to upload screenshots")
+        zipObj = zipfile.ZipFile(self.timestr+".zip", 'w')
+        zipObj.write(self.timestr + ".html")
+##        for folder in self.imageFolders:
+##            zipObj.write("./.screenshots/"+folder+"/")
+##        for folder in os.listdir("./.screenshots/"):
+##            print(folder)
+        for folder in self.imageFolders:
+            for image in os.listdir("./.screenshots/"+folder+"/"):
+                zipObj.write("./.screenshots/"+folder+"/"+image)
+        zipObj.close()
+        upload_file(self.timestr+".zip","scrumbags-reports")
 
 
 if __name__ == "__main__":

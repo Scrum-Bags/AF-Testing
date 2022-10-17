@@ -29,5 +29,6 @@ def upload_file(file_name, bucket, object_name=None):
 ##    #usage_demo()
 ##    #main()
 ##    #hello_s3()
-##    print(upload_file(".screenshots", "scrumbags-reports"))
+##    #print(upload_file(".screenshots", "scrumbags-reports"))
+##    print(upload_file("testZip.zip", "scrumbags-reports"))
 ##    pass
