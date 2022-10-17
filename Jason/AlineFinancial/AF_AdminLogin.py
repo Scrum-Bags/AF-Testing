@@ -63,7 +63,7 @@ class AF_Login():
         print("Clicking sign in button")
         #wait for login to load
         try:
-            WebDriverWait(driver, 60).until(EC.presence_of_element_located((AF_Admin_Home_Objects.By_settings_menu)))
+            WebDriverWait(driver, 90).until(EC.presence_of_element_located((AF_Admin_Home_Objects.By_settings_menu)))
         except:
             reporter.reportStep("Press submit and login","Admin dashboard should appear","Login unsuccessful",False,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
             print("Login unsuccessful")
