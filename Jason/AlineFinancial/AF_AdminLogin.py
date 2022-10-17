@@ -128,6 +128,7 @@ class AF_Login():
         if password is None:
             password = ""
 
+
         print("***Logging into Aline Financial Admin's Page - Negative Testing***")
 
         #wait for page to load
@@ -151,12 +152,15 @@ class AF_Login():
             reporter.reportStep("Put password in dialog box","Password should appear in the dialog box","Password not place in dialog box",False,"", passwordFieldObj.screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
             print("Password not placed in dialog box")
         #click sign in button
+
         signinObj = driver.find_element(*AF_Admin_Login_Objects.By_sign_in)
         signinObj.click()
+
         print("Clicking sign in button")
         #wait for error to load
         if username=="" or password=="":
             WebDriverWait(driver, 60).until(EC.text_to_be_present_in_element((AF_Admin_Login_Objects.By_sign_in_error), "Please enter credentials."))
+            reporter.reportStep("Press submit and login","A login error should appear","Login unsuccessful and an error appeared",True,"", driver.find_element(By.TAG_NAME, "body").screenshot, ssPath + ''.join(random.choices(string.ascii_lowercase, k=20)))
             print("Login error detected - Blank fields")
         else:
             try:
