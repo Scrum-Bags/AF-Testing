@@ -122,48 +122,48 @@ class Test_LoginLogout(unittest.TestCase):
             wbup.save("D:\\TestingResources\\AlineFinancial\\DataSheets\\UserAndPassword.xlsm")
             wbup.close()
         wb.close()
-##
-##    def test_004_login(self):
-##        #setup
-##        path = self.path
-##        wb = openpyxl.load_workbook(path,read_only=True)
-##        ws = wb["TC_003"]
-##        reporter = self.reporter
-##        driver = self.driver
-##        #repeat test with each data row
-##        for row in ws.iter_rows(min_row=2):
-##            #set driver size
-##            res = row[2].value.split("x")
-##            if len(res)==2:
-##                driver.set_window_size(int(res[0]), int(res[1]))
-##            elif res[0]=="fullscreen":
-##                driver.fullscreen_window()
-##                driver.manage().window().maximize();
-##            elif res[0] is None:
-##                pass
-##            #print(driver.get_window_size())
-##            #set up reporter
-##            testID="TC_003" +"_"+ ''.join(random.choices(string.ascii_lowercase, k=5))
-##            reporter.addTestCase(testID, "JS_TC_003", "Test the Forgot Password process for Aline Financial Members")
-##            reporter[testID].reportEvent("Set resolution for testing",False,res)
-##            #update pseudo db
-##            wbup = openpyxl.load_workbook("D:\\TestingResources\\AlineFinancial\\DataSheets\\UserAndPassword.xlsm", keep_vba=True)
-##            wsup = wbup["UserAndPassword"]
-##            for rowup in wsup.iter_rows(min_row=2):
-##                if rowup[0].value == row[0].value:
-##                    username = rowup[0].value
-##                    password = rowup[1].value
-##                    break
-##            wbup.save("D:\\TestingResources\\AlineFinancial\\DataSheets\\UserAndPassword.xlsm")
-##            wbup.close()
-##
-##            #login process
-##            loginObj = AF_MemberLogin(driver)
-##            loginObj.Launch_Login_Page()
-##            loginObj.login(reporter[testID], self.screenshotPath, username,password)
-##            loginObj.logout(reporter[testID], self.screenshotPath)
-##            
-##        wb.close()
+
+    def test_004_login(self):
+        #setup
+        path = self.path
+        wb = openpyxl.load_workbook(path,read_only=True)
+        ws = wb["TC_003"]
+        reporter = self.reporter
+        driver = self.driver
+        #repeat test with each data row
+        for row in ws.iter_rows(min_row=2):
+            #set driver size
+            res = row[2].value.split("x")
+            if len(res)==2:
+                driver.set_window_size(int(res[0]), int(res[1]))
+            elif res[0]=="fullscreen":
+                driver.fullscreen_window()
+                driver.manage().window().maximize();
+            elif res[0] is None:
+                pass
+            #print(driver.get_window_size())
+            #set up reporter
+            testID="TC_003" +"_"+ ''.join(random.choices(string.ascii_lowercase, k=5))
+            reporter.addTestCase(testID, "JS_TC_003", "Test the Forgot Password process for Aline Financial Members")
+            reporter[testID].reportEvent("Set resolution for testing",False,res)
+            #update pseudo db
+            wbup = openpyxl.load_workbook("D:\\TestingResources\\AlineFinancial\\DataSheets\\UserAndPassword.xlsm", keep_vba=True)
+            wsup = wbup["UserAndPassword"]
+            for rowup in wsup.iter_rows(min_row=2):
+                if rowup[0].value == row[0].value:
+                    username = rowup[0].value
+                    password = rowup[1].value
+                    break
+            wbup.save("D:\\TestingResources\\AlineFinancial\\DataSheets\\UserAndPassword.xlsm")
+            wbup.close()
+
+            #login process
+            loginObj = AF_MemberLogin(driver)
+            loginObj.Launch_Login_Page()
+            loginObj.login(reporter[testID], self.screenshotPath, username,password)
+            loginObj.logout(reporter[testID], self.screenshotPath)
+            
+        wb.close()
 
 
     def tearDown(self):

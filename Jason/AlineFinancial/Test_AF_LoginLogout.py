@@ -139,10 +139,6 @@ class Test_LoginLogout(unittest.TestCase):
         upload_file(cls.timestr+".zip","scrumbags-reports")
 
 if __name__ == "__main__":
-##    suite = unittest.TestSuite((unittest.makeSuite(Test_LoginLogout),))
-##    result = unittest.TextTestRunner().run(suite)
-##    #Test_LoginLogout.disconnect()
+
     unittest.main(warnings='ignore')
-##    print(tester.timestr)
-##    print(upload_file(tester.timestr + ".html","scrumbags-reports"))
-##    #unittest.main()
+

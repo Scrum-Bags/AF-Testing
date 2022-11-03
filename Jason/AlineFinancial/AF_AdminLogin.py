@@ -24,11 +24,7 @@ class AF_Login():
 
     def Launch_Login_Page(self):
         self.driver.get("http://uftcapstone-dev-admin.s3-website-us-east-1.amazonaws.com/login")
-##        try:
-##            WebDriverWait(self.driver, 5).until(EC.visibility_of_element_located((AO_Login_Objects.By_load_screen)))
-##            WebDriverWait(self.driver, 5).until(EC.invisibility_of_element_located((AO_Login_Objects.By_load_screen)))
-##        except:
-##            pass
+
 
     def AF_login(self, reporter, ssPath, username, password):
         print("***Logging into Aline Financial Admin's Page***")
